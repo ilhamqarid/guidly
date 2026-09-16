@@ -1,0 +1,11 @@
+.env 
+.env.* 
+!.env.example 
+frontend/node_modules/ 
+frontend/dist/ 
+backend/target/ 
+ai-service/venv/ 
+ai-service/__pycache__/ 
+ai-service/*.pyc 
+.vscode/ 
+.idea/

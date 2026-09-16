@@ -1,0 +1,43 @@
+.glossary-wrapper {
+  position: relative;
+  display: inline;
+}
+
+.glossary-term {
+  border-bottom: 2px dotted var(--primary, #2563eb);
+  cursor: pointer;
+  color: var(--primary, #2563eb);
+}
+
+.glossary-tooltip {
+  position: absolute;
+  z-index: 50;
+  bottom: 100%;
+  left: 0;
+  transform: translateY(-6px);
+  background: white;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 0.6rem 0.8rem;
+  width: 260px;
+  white-space: normal;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.glossary-tooltip strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #111827;
+}
+
+.glossary-tooltip p {
+  margin: 0 0 0.4rem 0;
+  color: #374151;
+}
+
+.glossary-tooltip a {
+  font-size: 0.8rem;
+  color: var(--primary, #2563eb);
+}
