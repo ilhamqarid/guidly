@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: guidly-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: guidly
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_USER: ${MYSQL_USER:-guidly}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-changeme}
+    ports:
+      - "3306:3306"
+    volumes:
+      - guidly_mysql_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+  backend:
+    build: ./backend
+    container_name: guidly-backend
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/guidly
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-guidly}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-changeme}
+      AI_SERVICE_URL: http://ai-service:8000
+    ports:
+      - "8080:8080"
+
+  ai-service:
+    build: ./ai-service
+    container_name: guidly-ai-service
+    restart: unless-stopped
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY:-}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: guidly-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8080
+    ports:
+      - "5173:5173"
+
+volumes:
+  guidly_mysql_data:
