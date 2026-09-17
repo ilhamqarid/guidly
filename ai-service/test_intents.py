@@ -1,5 +1,5 @@
 """
-Petit dataset de test pour le NLU + mesure d'accuracy.
+Petit dataset de test pour le NLU + mesure d'accuracy 
 
 Lancement : python3 test_intents.py
 """
@@ -8,10 +8,11 @@ from matcher import analyze
 
 # (texte, intent_code attendu ou None si hors périmètre)
 TEST_CASES = [
-    ("bghit passport", "passport_application"),
-    ("je veux refaire mon passeport", "passport_application"),
-    ("أريد جواز السفر", "passport_application"),
-    ("je voudrais faire mon premier passeport", "passport_application"),
+    ("bghit passport", "passport_first_request"),
+    ("je veux refaire mon passeport", "passport_renewal"),
+    ("أريد جواز السفر", "passport_first_request"),
+    ("je voudrais faire mon premier passeport", "passport_first_request"),
+    ("je veux renouveler mon passeport", "passport_renewal"),
 
     ("bghit njadad la carte grise", "vehicle_registration"),
     ("comment immatriculer ma nouvelle voiture", "vehicle_registration"),
