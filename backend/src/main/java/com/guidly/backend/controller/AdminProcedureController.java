@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Endpoints réservés au rôle ADMIN. Protégé par SecurityConfig
  * (/api/admin/** exige ROLE_ADMIN) ET par @PreAuthorize ici (défense en
@@ -23,6 +25,16 @@ public class AdminProcedureController {
 
     @Autowired
     private ProcedureService procedureService;
+
+    /**
+     * Liste complète (tous statuts : DRAFT, PUBLISHED, ARCHIVED), utilisée
+     * par le tableau de bord admin. Contrairement à GET /api/procedures
+     * (public), qui ne renvoie que les procédures PUBLISHED.
+     */
+    @GetMapping
+    public List<ProcedureDTO> listAll() {
+        return procedureService.getAllProceduresForAdmin();
+    }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ProcedureUpsertRequest request) {
