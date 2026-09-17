@@ -28,7 +28,23 @@ public class ProcedureService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
+    /**
+     * Liste publique : uniquement les procédures PUBLISHED. Une procédure
+     * DRAFT (pas encore finalisée) ou ARCHIVED (retirée) ne doit jamais
+     * être visible d'un citoyen.
+     */
     public List<ProcedureDTO> getAllProcedures() {
+        return procedureRepository.findByStatus(ProcedureStatus.PUBLISHED)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Liste complète (admin uniquement) : tous les statuts, pour permettre
+     * de gérer les brouillons et de voir les procédures archivées.
+     */
+    public List<ProcedureDTO> getAllProceduresForAdmin() {
         return procedureRepository.findAll()
                 .stream()
                 .map(this::toDTO)
@@ -57,11 +73,6 @@ public class ProcedureService {
         });
     }
 
-    /**
-     * "Suppression" d'une procédure = archivage, jamais une suppression physique
-     * (règle de gestion : on ne casse pas l'historique des utilisateurs qui
-     * l'ont déjà suivie — voir docs/02-modele-donnees.md).
-     */
     public boolean archiveProcedure(Long id) {
         return procedureRepository.findById(id).map(procedure -> {
             procedure.setStatus(ProcedureStatus.ARCHIVED);
