@@ -49,11 +49,11 @@ export default function Navbar() {
                   <strong>{user.name}</strong>
                   <span>{user.email}</span>
                 </div>
-                <Link to="/account" onClick={() => setMenuOpen(false)}>👤 Mon compte</Link>
+                <Link to="/account" onClick={() => setMenuOpen(false)}> Mon compte</Link>
                 {user.role === "ADMIN" && (
-                  <Link to="/admin" onClick={() => setMenuOpen(false)}>🛠 Espace admin</Link>
+                  <Link to="/admin" onClick={() => setMenuOpen(false)}> Espace admin</Link>
                 )}
-                <button onClick={handleLogout}>🚪 Déconnexion</button>
+                <button onClick={handleLogout}> Déconnexion</button>
               </div>
             )}
           </div>
