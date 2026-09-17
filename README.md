@@ -17,6 +17,9 @@ L'IA ne fabrique jamais une procédure administrative. Elle sert uniquement à :
 
 La base de données relationnelle reste la seule source de vérité — jamais une improvisation du modèle.
 
+
+<img width="605" height="291" alt="image" src="https://github.com/user-attachments/assets/f160da4b-9d13-4d39-ab2c-ca4c325acbd0" />
+
 ---
 
 ## Architecture
