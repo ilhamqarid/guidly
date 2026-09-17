@@ -19,7 +19,7 @@ La base de données relationnelle reste la seule source de vérité — jamais u
 
 <img width="1891" height="914" alt="image" src="https://github.com/user-attachments/assets/f450cb71-a360-4d1d-b3c9-ca8d3e5537c7" />
 
-
+*Page d'accueil*
 ---
 
 ## Architecture
