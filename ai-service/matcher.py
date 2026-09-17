@@ -11,9 +11,6 @@ RENEWAL_MARKERS = ["renouveler", "renouvellement", "refaire", "expiré", "expire
 
 ARABIC_SCRIPT_RE = re.compile(r"[\u0600-\u06FF]")
 
-GENERIC_SINGLE_WORDS = {"societe", "voiture", "etudiant"}
-
-
 def normalize(text: str) -> str:
     """Minuscule, sans accents, espaces normalisés."""
     text = text.lower().strip()
@@ -24,29 +21,12 @@ def normalize(text: str) -> str:
 
 
 def detect_language(raw_text: str) -> str:
-    """Détection grossière : écriture arabe -> 'arabic'. Sinon on ne peut pas
-    distinguer fiablement français / darija latinisée sans modèle dédié,
-    donc on renvoie 'french_or_darija' et on laisse le matching par mots-clés
-    faire le travail (les deux lexiques sont fusionnés dans INTENTS)."""
     if ARABIC_SCRIPT_RE.search(raw_text):
         return "ar"
     return "fr"
 
 
 def _keyword_score(normalized_text: str, keywords: list[str]) -> float:
-    """Score = meilleur match parmi les mots-clés, combinant présence exacte
-    (substring) et similarité approximative (tolère les fautes de frappe,
-    section 32 du prompt maître).
-
-    Correction (voir revue de code) : l'ancienne formule donnait un score
-    plancher de 0.75 à N'IMPORTE QUEL mot-clé dès qu'il apparaissait en
-    sous-chaîne, même un mot isolé très courant ("société", "voiture",
-    "étudiant"). Résultat : "Société Générale recrute" ou "ma voiture est
-    en panne" étaient classés à tort comme une démarche administrative
-    avec 0.80 de confiance. On garde le score fort pour les expressions
-    multi-mots (spécifiques par nature) et pour les mots uniques mais rares
-    (acronymes comme "cnss", "anapec"...), et on baisse le score des mots
-    uniques identifiés comme génériques (GENERIC_SINGLE_WORDS)."""
     best = 0.0
     for kw in keywords:
         kw_norm = normalize(kw)
@@ -77,9 +57,6 @@ def _keyword_score(normalized_text: str, keywords: list[str]) -> float:
 
 
 def detect_intent(raw_text: str) -> dict:
-    """Retourne l'intention la plus probable + son score de confiance,
-    ainsi que les 2-3 meilleures alternatives (pour la zone de confiance
-    intermédiaire, section 28)."""
     normalized = normalize(raw_text)
     scores = []
     for intent_code, data in INTENTS.items():
@@ -97,7 +74,6 @@ def detect_intent(raw_text: str) -> dict:
 
 
 def extract_entities(raw_text: str) -> dict:
-    """Étape B : extraction d'entités simples (section 6 et 13-B)."""
     normalized = normalize(raw_text)
     entities = {}
 
@@ -124,10 +100,21 @@ def analyze(raw_text: str) -> dict:
     top = intent_result["top"]
     confidence = top["confidence"]
 
+    MAX_GAP_FOR_REAL_AMBIGUITY = 0.15
+
+    close_alternatives = [
+        alt for alt in intent_result["alternatives"]
+        if (confidence - alt["confidence"]) <= MAX_GAP_FOR_REAL_AMBIGUITY
+    ]
+
     if confidence >= THRESHOLD_DIRECT:
         action = "direct"
-    elif confidence >= THRESHOLD_SUGGEST:
+    elif confidence >= THRESHOLD_SUGGEST and close_alternatives:
         action = "suggest"
+    elif confidence >= THRESHOLD_SUGGEST:
+        # Confiance suffisante mais aucune alternative sérieuse concurrente
+        # -> pas d'ambiguïté réelle, on répond directement.
+        action = "direct"
     else:
         action = "clarify"
 
@@ -138,6 +125,6 @@ def analyze(raw_text: str) -> dict:
         "intent_label": top["label"],
         "confidence": confidence,
         "action": action,
-        "alternatives": intent_result["alternatives"],
+        "alternatives": close_alternatives if action == "suggest" else [],
         "entities": entities,
     }
