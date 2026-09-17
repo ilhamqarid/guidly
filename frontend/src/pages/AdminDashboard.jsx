@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   function loadAll() {
-    api.get("/procedures").then((res) => setProcedures(res.data));
+    api.get("/admin/procedures").then((res) => setProcedures(res.data));
     api.get("/categories").then((res) => setCategories(res.data));
     api.get("/organizations").then((res) => setOrganizations(res.data));
   }
