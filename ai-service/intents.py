@@ -1,27 +1,36 @@
-"""
-Base de connaissance des intentions.
-
-Principe fondamental du projet  : l'IA ne doit
-JAMAIS inventer une procédure. Cette liste doit rester synchronisée avec les
-`intent_code` réellement présents dans la table `procedures` du backend.
-Si tu ajoutes une nouvelle procédure en base, ajoute son intent_code ici
-avec ses mots-clés, sinon elle ne sera jamais détectée par le NLU.
-
-Structure : chaque intention a une liste de mots-clés/expressions en
-français, arabe (darija latinisé compris) qui, lorsqu'ils apparaissent dans
-la phrase de l'utilisateur, augmentent le score de cette intention.
-"""
-
 INTENTS = {
-    "passport_application": {
-        "label": "Demande de passeport",
+    "passport_first_request": {
+        "label": "Demande de passeport - première demande",
+        "keywords": [
+            # Français — phrases spécifiques à la première demande
+            "premier passeport", "première demande de passeport",
+            "jamais eu de passeport", "passeport pour la première fois",
+            # Arabe
+            "جواز سفر جديد", "باسبور لأول مرة",
+            # Darija latinisée
+            "sanaa passport", "premiere fois passport", "jawaz safar jdid",
+            # Mots-clés génériques (fallback si aucune précision de type
+            # n'est donnée) — volontairement en dernier et en un seul mot,
+            # donc score plus faible que les phrases de renouvellement
+            # ci-dessous en cas d'ambiguïté (voir formule de score dans
+            # matcher.py : un match multi-mots score plus haut qu'un match
+            # d'un seul mot).
+            "passeport", "passport", "nouveau passeport",
+            "جواز السفر", "جواز سفر", "باسبور", "bghit passport", "jawaz safar",
+        ],
+    },
+    "passport_renewal": {
+        "label": "Renouvellement de passeport",
         "keywords": [
             # Français
-            "passeport", "passport", "refaire mon passeport", "nouveau passeport",
-            # Arabe (écriture arabe)
-            "جواز السفر", "جواز سفر", "باسبور",
+            "renouveler mon passeport", "renouvellement de passeport",
+            "renouveler passeport", "passeport expiré", "passeport expire",
+            "refaire mon passeport",
+            # Arabe
+            "تجديد جواز السفر", "تجديد الباسبور", "جواز السفر المنتهي",
             # Darija latinisée
-            "passport", "bghit passport", "sanaa passport", "jawaz safar",
+            "njadad passport", "bghit njadad passport", "renouveler passport",
+            "tjded passport", "passport khlass",
         ],
     },
     "cnie_first_application": {
@@ -104,4 +113,4 @@ INTENTS = {
 
 # Seuils de confiance 
 THRESHOLD_DIRECT = 0.85       
-THRESHOLD_SUGGEST = 0.60     
+THRESHOLD_SUGGEST = 0.60      
